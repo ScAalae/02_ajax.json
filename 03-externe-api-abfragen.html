@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css" />
+  <title>Chuck Norris Joke Generator</title>
+</head>
+<body>
+  <div class="container">
+    <h2>Chuck Norris Joke Generator</h2>
+    <form>
+      <div>
+        <label for="anzahl">Anzahl der Jokes</label>
+        <input type="number" id="anzahl">
+      </div>
+      <div>
+        <button class="jokes-anfragen">Jokes anfragen</button>
+      </div>
+    </form>
+    <ul class="jokes"></ul>
+  </div>
+  
+  <script>
+    document.querySelector('.jokes-anfragen').addEventListener('click', jokesAnfragen);
+    let ulJokes = document.querySelector('.jokes');
+
+    function jokesAnfragen(e) {
+      const anzahl = document.querySelector('input[type="number"]').value;
+      const xhr = new XMLHttpRequest();
+
+      xhr.onreadystatechange = function() {
+        if (this.readyState < 4) {
+          ulJokes.innerHTML = '<p>Lade Jokes...</p>';
+        }
+        if (this.readyState == 4 && this.status === 200) {
+          const antwort = JSON.parse(this.responseText);
+          let output = '';
+          if (antwort.type === 'success') {
+            antwort.value.forEach(function(objJoke) {
+              output += `<li>${objJoke.joke}</li>`;
+            });
+          } else {
+            output += '<li>Es ist ein Fehler aufgetreten</li>';
+          }
+
+          ulJokes.innerHTML = output;
+        }
+      }
+
+      xhr.open('GET', `http://api.icndb.com/jokes/random/${anzahl}`, true);
+
+      xhr.send();
+
+      e.preventDefault();
+    }
+  </script> 
+</body>
+</html>

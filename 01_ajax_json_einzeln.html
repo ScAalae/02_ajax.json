@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+   <meta charset="utf-8">
+   <title>Ajax, JSON-Objekt</title>
+   <script>
+      function JSONanfordern() {
+         /* === 1. Erzeugen des AJAX-Objektes === */
+         let xhr = new XMLHttpRequest();
+        
+         /* =================================================================
+         
+             2. Erstellen des EventHandlers (reagiert auf Antworten des 
+                Servers)
+
+                - Das Event-Objekt wird automatisch erzeugt und 
+                  an die Funktion "auswerten()" weitergegeben
+                - Man nutzt den Parameter der Callback-Funktion 
+                  (in diesem Fall "e"), um auf Methoden und Eigenschaften
+                  des Event-Objekts zuzugreifen 
+
+         =================================================================== */
+         xhr.onreadystatechange = auswerten;
+
+         /* === 3. Anfrage (mit Details zur Datenübertragung) erstellen === */
+         xhr.open("get", "ajax_json_einzeln.json", true);
+
+         /* === 4. Anfrage absenden === */
+         xhr.send();
+      }
+
+      function auswerten(e) {
+         let zielElement = document.getElementById("ausgabe");
+
+         // console.log(e.target.readyState);
+
+         if (e.target.readyState < 4) {
+            zielElement.innerHTML = "Laden...";
+         }
+         if (e.target.readyState == 4 && e.target.status == 200) {
+            let antwort = JSON.parse((e.target.responseText));
+            zielElement.textContent = 
+            "Farbe: " + antwort.farbe + ", Geschwindigkeit: " + antwort.geschwindigkeit;
+         }
+      }
+   </script>
+</head>
+<body>
+   <p>Fahrzeugdaten:</p>
+   <p><a id="link" href="#">BMW</a></p>
+   <p id="ausgabe">&nbsp;</p>
+   <script>
+      document.getElementById("link").addEventListener("click", JSONanfordern);
+   </script>
+</body>
+</html>

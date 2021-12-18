@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+   <meta charset="utf-8">
+   <title>Ajax, JSON-Sammlung</title>
+</head>
+
+<body>
+   <p>Fahrzeugdaten:</p>
+   <p><a id="link0" href="#">BMW</a></p>
+   <p><a id="link1" href="#">Jaguar</a></p>
+   <p><a id="link2" href="#">Renault</a></p>
+   <p id="ausgabe">&nbsp</p>
+   <script>
+      function anfordern(x) {
+         /* === 1. Erzeugen des AJAX-Objektes === */
+         let xhr = new XMLHttpRequest();
+
+         /* =================================================================
+         
+            2. Erstellen des EventHandlers (reagiert auf Antworten des 
+               Servers)
+
+               - Die Funktion "auswerten()" soll einen individuellen 
+                 Parameter (x) entgegen nehmen
+               - Das Argument für diesen Parameter wird durch die Funktion
+                 "anfordern()" übertragen
+               - Dieses Argument legt fest, welches JSON-Objekt ausgelesen
+                 werden soll
+               - Der Event Handler muss eine anonyme Funktion nutzen, die 
+                 nicht sofort ausgeführt wird, um die Funktion "auswerten()"
+                 mit Parametern aufzurufen 
+         
+         =================================================================== */
+         xhr.onreadystatechange = function(e) { auswerten(e, x); };
+
+         /* === 3. Anfrage (mit Details zur Datenübertragung) erstellen === */
+         xhr.open("get", "ajax_json_sammlung.json", true);
+
+         /* === 4. Anfrage absenden === */
+         xhr.send();
+      }
+
+      function auswerten(e, x) {
+         let zielElement = document.getElementById("ausgabe");
+
+         // console.log(e.target.readyState);
+
+         if (e.target.readyState < 4) {
+            zielElement.innerHTML = "Laden...";
+         }
+
+         if (e.target.readyState == 4 && e.target.status == 200) {
+            let antwort = JSON.parse(e.target.responseText);
+            zielElement.textContent =
+            "Farbe: " + antwort[x].farbe + ", Geschwindigkeit: " + antwort[x].geschwindigkeit;
+         }
+      }
+
+      document.getElementById("link0").addEventListener("click", function() { anfordern(0); });
+      document.getElementById("link1").addEventListener("click", function() { anfordern(1); });
+      document.getElementById("link2").addEventListener("click", function() { anfordern(2); });
+   </script>
+</body>
+
+</html>
